@@ -38,9 +38,10 @@ app.post('/api/users/:_id/exercises', (req, res) => {
   User.findById(_id, (err, user) => {
     if(err) return res.status(500).send({ error: err.message });
     user.excercises.push(excercise)
+    const { username } = user
     user.save((err, data) => {
       if(err) return res.status(500).send({ error: err.message });
-      return res.json( username, _id, description, duration, date )
+      return res.json({username, _id, description, duration, date})
     });
   });
 });
