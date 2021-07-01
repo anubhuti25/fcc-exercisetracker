@@ -42,6 +42,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
     user.save((err, data) => {
       if(err) return res.status(500).send({ error: err.message });
       date = date.toDateString()
+      duration = parseInt(duration)
       return res.json({ _id, username, date, duration, description })
     });
   });
