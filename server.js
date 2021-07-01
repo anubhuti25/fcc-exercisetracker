@@ -40,7 +40,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
     user.excercises.push(excercise)
     user.save((err, data) => {
       if(err) return res.status(500).send({ error: err.message });
-      return res.json(data)
+      return res.json( username, _id, description, duration, date )
     });
   });
 });
@@ -52,13 +52,15 @@ app.get('/api/users/:_id/logs', (req, res) => {
   to = to ? new Date(to) : new Date()
   User.findById(_id,(err, user) => {
     if(err) return res.status(500).send({ error: err.message });
+    const filteredData = user.excercises
+                        .filter(t => t.date.getTime() >= from.getTime() && t.date.getTime() <= to.getTime())
+                        .slice(0,limit ? limit : user.excercises.length)
+                        .map( t => ({ description: t.description, date : t.date, duration: t.duration }))
     return res.json({
       username: user.username, 
-      _id : user._id, 
-      count: user.excercises.count, 
-      log: user.excercises
-              .filter(t => t.date.getTime() >= from.getTime() && t.date.getTime() <= to.getTime())
-              .slice(0,limit ? limit : user.excercises.length)
+      '_id' : user._id, 
+      count: filteredData.length, 
+      log: filteredData
     });
   });
 });
@@ -91,6 +93,7 @@ app.post('/api/users', (req, res) => {
     });
 
 });
+
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
